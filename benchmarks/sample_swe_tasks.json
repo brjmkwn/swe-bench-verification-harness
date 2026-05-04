@@ -1,0 +1,47 @@
+[
+  {
+    "instance_id": "astral-sh__uv-1204",
+    "repo_url": "https://github.com/astral-sh/uv",
+    "base_commit": "e3a89b1c784f187a29e",
+    "environment": "python-3.11",
+    "test_command": "pytest tests/test_resolver.py",
+    "base_test_command": "pytest tests/test_resolver.py",
+    "timeout_seconds": 60,
+    "patch_diff": "diff --git a/uv/resolver.py b/uv/resolver.py\n--- a/uv/resolver.py\n+++ b/uv/resolver.py\n@@ -45,7 +45,7 @@ class DependencyResolver:\n     def resolve(self, requirement):\n-        if requirement.is_optional and not self.allow_optional:\n+        if requirement.is_optional and not self.allow_optional and not requirement.is_dev:\n             return None\n         return self._find_best_match(requirement)\n",
+    "metadata": {
+      "split": "verified",
+      "difficulty": "medium",
+      "issue_id": "1204"
+    }
+  },
+  {
+    "instance_id": "psf__requests-3182",
+    "repo_url": "https://github.com/psf/requests",
+    "base_commit": "c4d3e21a008891bf2e",
+    "environment": "python-3.11",
+    "test_command": "pytest tests/test_structures.py",
+    "base_test_command": "pytest tests/test_structures.py",
+    "timeout_seconds": 45,
+    "patch_diff": "diff --git a/requests/structures.py b/requests/structures.py\n--- a/requests/structures.py\n+++ b/requests/structures.py\n@@ -60,6 +60,8 @@ class CaseInsensitiveDict(dict):\n     def __setitem__(self, key, value):\n+        if not isinstance(key, str):\n+            key = str(key)\n         super().__setitem__(key.lower(), (key, value))\n",
+    "metadata": {
+      "split": "lite",
+      "difficulty": "easy",
+      "issue_id": "3182"
+    }
+  },
+  {
+    "instance_id": "expressjs__express-4912",
+    "repo_url": "https://github.com/expressjs/express",
+    "base_commit": "9081a9f01bc4987a1",
+    "environment": "node-20",
+    "test_command": "npm test",
+    "base_test_command": "npm test",
+    "timeout_seconds": 60,
+    "patch_diff": "diff --git a/lib/router/route.js b/lib/router/route.js\n--- a/lib/router/route.js\n+++ b/lib/router/route.js\n@@ -112,6 +112,7 @@ Route.prototype.dispatch = function dispatch(req, res, done) {\n     if (!layer) {\n+      if (res.headersSent) return;\n       return done(err);\n     }\n",
+    "metadata": {
+      "split": "multilingual",
+      "difficulty": "hard",
+      "issue_id": "4912"
+    }
+  }
+]

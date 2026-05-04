@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  swe-verification-harness:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: swe_verification_harness
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount host docker socket to enable ephemeral micro-container spawning
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - PORT=8000
+      - POOL_MIN_IDLE=5
+      - POOL_MAX_IDLE=15
+      - SANDBOX_MEMORY_LIMIT=1g
+      - SANDBOX_CPU_QUOTA=2.0
+      - SANDBOX_PIDS_LIMIT=100
+      - SANDBOX_DEFAULT_TIMEOUT_SECONDS=60
+      - OPIK_PROJECT_NAME=swe-bench-evals
+      # - OPIK_API_KEY=your_opik_api_key_here
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # Optional Prometheus scraper for telemetry
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: swe_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - swe-verification-harness
